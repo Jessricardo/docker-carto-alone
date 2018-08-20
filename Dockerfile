@@ -132,6 +132,8 @@ RUN curl https://nodejs.org/download/release/v6.9.2/node-v6.9.2-linux-x64.tar.gz
   rm -r /tmp/npm-* /root/.npm
 
 # Setting PostgreSQL
+RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/10/main/pg_hba.conf
+RUN echo "listen_addresses='*'" >> /etc/postgresql/10/main/postgresql.conf
 RUN sed -i 's/\(peer\|md5\)/trust/' /etc/postgresql/10/main/pg_hba.conf && \
     service postgresql start && \
     createuser publicuser --no-createrole --no-createdb --no-superuser -U postgres && \
