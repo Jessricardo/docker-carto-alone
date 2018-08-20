@@ -131,15 +131,6 @@ RUN curl https://nodejs.org/download/release/v6.9.2/node-v6.9.2-linux-x64.tar.gz
   npm install -g npm@3.10.9 && \
   rm -r /tmp/npm-* /root/.npm
 
-# Setting PostgreSQL
-RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/10/main/pg_hba.conf
-RUN echo "listen_addresses='*'" >> /etc/postgresql/10/main/postgresql.conf
-RUN sed -i 's/\(peer\|md5\)/trust/' /etc/postgresql/10/main/pg_hba.conf && \
-    service postgresql start && \
-    createuser publicuser --no-createrole --no-createdb --no-superuser -U postgres && \
-    createuser tileuser --no-createrole --no-createdb --no-superuser -U postgres && \
-    service postgresql stop
-
 # Crankshaft: CARTO Spatial Analysis extension for PostgreSQL
 RUN cd / && \
     curl https://bootstrap.pypa.io/get-pip.py | python && \
@@ -149,12 +140,6 @@ RUN cd / && \
     make install && \
     cd ..
 
-# Initialize template postgis db
-ADD ./template_postgis.sh /tmp/template_postgis.sh
-RUN service postgresql start && /bin/su postgres -c \
-      /tmp/template_postgis.sh && service postgresql stop
-
-ADD ./cartodb_pgsql.sh /tmp/cartodb_pgsql.sh
 
 # Install CartoDB API
 RUN git clone git://github.com/CartoDB/CartoDB-SQL-API.git && \
