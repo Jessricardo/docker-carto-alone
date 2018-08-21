@@ -164,8 +164,6 @@ RUN git clone --recursive git://github.com/CartoDB/cartodb.git && \
     # Install cartodb extension
     cd lib/sql && \
     PGUSER=postgres make install && \
-    service postgresql start && /bin/su postgres -c \
-      /tmp/cartodb_pgsql.sh && service postgresql stop && \
     cd - && \
     npm install && \
     rm -r /tmp/npm-* /root/.npm && \
@@ -217,11 +215,11 @@ ENV PATH /usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/s
 RUN mkdir -p /cartodb/log && touch /cartodb/log/users_modifications && \
     /opt/varnish/sbin/varnishd -a :6081 -T localhost:6082 -s malloc,256m -f /etc/varnish.vcl && \
     perl -pi.bak -e 's/^bind 127.0.0.1 ::1$/bind 0.0.0.0/' /etc/redis/redis.conf && \
-    service postgresql start && service redis-server start && \
+    service redis-server start && \
     perl -pi -e 's/0\.22\.0/0.22.2/' /cartodb/app/models/user/db_service.rb && \
 	bash -l -c "cd /cartodb && bash script/create_dev_user && \
     bash script/setup_organization.sh && bash script/geocoder.sh" && \
-	service postgresql stop && service redis-server stop && \
+	service redis-server stop && \
     chmod +x /cartodb/script/fill_geocoder.sh && \
     chmod +x /cartodb/script/sync_tables_trigger.sh
 
